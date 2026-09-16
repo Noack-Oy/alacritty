@@ -14,6 +14,8 @@ pub struct Colors {
     pub normal: NormalColors,
     pub bright: BrightColors,
     pub dim: Option<DimColors>,
+    pub normal_background: BackgroundColors,
+    pub bright_background: BackgroundColors,
     pub indexed_colors: Vec<IndexedColor>,
     pub search: SearchColors,
     pub line_indicator: LineIndicatorColors,
@@ -30,6 +32,32 @@ impl Colors {
 
     pub fn footer_bar_background(&self) -> Rgb {
         self.footer_bar.background.unwrap_or(self.primary.foreground)
+    }
+
+    /// Alternative RGB values used when palette indices 0..=15 are a cell's background.
+    ///
+    /// Unset entries are `None` and fall back to the regular palette.
+    pub fn background_palette(&self) -> [Option<Rgb>; 16] {
+        let normal = &self.normal_background;
+        let bright = &self.bright_background;
+        [
+            normal.black,
+            normal.red,
+            normal.green,
+            normal.yellow,
+            normal.blue,
+            normal.magenta,
+            normal.cyan,
+            normal.white,
+            bright.black,
+            bright.red,
+            bright.green,
+            bright.yellow,
+            bright.blue,
+            bright.magenta,
+            bright.cyan,
+            bright.white,
+        ]
     }
 }
 
@@ -241,6 +269,18 @@ impl Default for BrightColors {
             white: Rgb::new(0xf8, 0xf8, 0xf8),
         }
     }
+}
+
+#[derive(ConfigDeserialize, Serialize, Copy, Clone, Default, Debug, PartialEq, Eq)]
+pub struct BackgroundColors {
+    pub black: Option<Rgb>,
+    pub red: Option<Rgb>,
+    pub green: Option<Rgb>,
+    pub yellow: Option<Rgb>,
+    pub blue: Option<Rgb>,
+    pub magenta: Option<Rgb>,
+    pub cyan: Option<Rgb>,
+    pub white: Option<Rgb>,
 }
 
 #[derive(ConfigDeserialize, Serialize, Clone, Debug, PartialEq, Eq)]

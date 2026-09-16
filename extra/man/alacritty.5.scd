@@ -471,6 +471,38 @@ Colors are specified using their hexadecimal values with a _#_ prefix: _#RRGGBB_
 	*white* = _"<string>"_
 		Default: _"#8e8e8e"_
 
+*normal_background*
+
+	This section documents the *[colors.normal_background]* table of the
+	configuration.
+
+	Alternative colors used when the *normal* palette colors (SGR 40-47 or
+	indices 0-7 of SGR 48;5) appear as a cell's background. Colors that are
+	not set fall back to the corresponding *normal* color, matching the
+	regular behavior of using the same palette for foreground and background.
+	Runtime palette changes (OSC 4) take precedence over this table.
+
+	*black* = _"<string>"_
+	*red* = _"<string>"_
+	*green* = _"<string>"_
+	*yellow* = _"<string>"_
+	*blue* = _"<string>"_
+	*magenta* = _"<string>"_
+	*cyan* = _"<string>"_
+	*white* = _"<string>"_
+
+	Default: unset
+
+*bright_background*
+
+	This section documents the *[colors.bright_background]* table of the
+	configuration.
+
+	Same as *normal_background*, but for the *bright* palette colors
+	(SGR 100-107 or indices 8-15 of SGR 48;5).
+
+	Default: unset
+
 *indexed_colors* = [{ index = _<integer>_, color = _"<string>"_ },]
 
 	The indexed colors include all colors from 16 to 256.

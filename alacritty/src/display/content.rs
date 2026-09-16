@@ -33,6 +33,7 @@ pub struct RenderableContent<'a> {
     hint: Option<Hint<'a>>,
     config: &'a UiConfig,
     colors: &'a List,
+    background_palette: &'a [Option<Rgb>; 16],
     focused_match: Option<&'a Match>,
     size: &'a SizeInfo,
 }
@@ -75,6 +76,7 @@ impl<'a> RenderableContent<'a> {
 
         Self {
             colors: &display.colors,
+            background_palette: &display.background_palette,
             size: &display.size_info,
             cursor: RenderableCursor::new_hidden(),
             terminal_content,
@@ -103,6 +105,23 @@ impl<'a> RenderableContent<'a> {
     /// Get the RGB value for a color index.
     pub fn color(&self, color: usize) -> Rgb {
         self.terminal_content.colors[color].map(Rgb).unwrap_or(self.colors[color])
+    }
+
+    /// Get the RGB value for a color index used as a cell's background.
+    ///
+    /// Like [`Self::color`], but palette indices 0..=15 can be overridden with
+    /// `colors.normal_background`/`colors.bright_background`. Runtime palette
+    /// changes (OSC 4) take precedence over the configured background palette.
+    pub fn bg_color(&self, color: usize) -> Rgb {
+        match self.terminal_content.colors[color].map(Rgb) {
+            Some(color) => color,
+            None => self
+                .background_palette
+                .get(color)
+                .copied()
+                .flatten()
+                .unwrap_or(self.colors[color]),
+        }
     }
 
     pub fn selection_range(&self) -> Option<SelectionRange> {
@@ -374,8 +393,8 @@ impl RenderableCell {
     fn compute_bg_rgb(content: &RenderableContent<'_>, bg: Color) -> Rgb {
         match bg {
             Color::Spec(rgb) => rgb.into(),
-            Color::Named(ansi) => content.color(ansi as usize),
-            Color::Indexed(idx) => content.color(idx as usize),
+            Color::Named(ansi) => content.bg_color(ansi as usize),
+            Color::Indexed(idx) => content.bg_color(idx as usize),
         }
     }
 
