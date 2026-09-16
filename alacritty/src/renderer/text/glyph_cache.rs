@@ -111,6 +111,11 @@ impl GlyphCache {
 
         let mut metrics = rasterizer.metrics(key, font.size())?;
         metrics.strikeout_position += font.glyph_offset.y as f32;
+        // The underline has to follow the glyphs for the same reason the strikeout does:
+        // both are positioned relative to the baseline, and `glyph_offset` moves the
+        // glyphs away from it. Without this a downward glyph offset walks the text into
+        // a stationary underline.
+        metrics.underline_position += font.glyph_offset.y as f32;
         Ok(metrics)
     }
 
