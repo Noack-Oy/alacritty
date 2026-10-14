@@ -25,6 +25,7 @@ use winit::event_loop::EventLoop;
 #[cfg(all(feature = "x11", not(any(target_os = "macos", windows))))]
 use winit::raw_window_handle::{HasDisplayHandle, RawDisplayHandle};
 
+use alacritty_terminal::glyph_tally;
 use alacritty_terminal::tty;
 
 mod cli;
@@ -85,6 +86,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some(Subcommands::Migrate(options)) => migrate::migrate(options),
         None => alacritty(options)?,
     }
+
+    // Append any glyph counts still held in memory. No-op when the tally is off.
+    glyph_tally::flush();
 
     Ok(())
 }
