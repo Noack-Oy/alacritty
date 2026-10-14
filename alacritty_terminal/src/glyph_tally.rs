@@ -23,8 +23,9 @@
 //! file sums them.
 
 use std::collections::HashMap;
-use std::fs::OpenOptions;
+use std::fs::{create_dir_all, OpenOptions};
 use std::io::Write;
+use std::path::Path;
 use std::sync::{Mutex, OnceLock};
 
 use log::{debug, warn};
@@ -52,6 +53,18 @@ impl Tally {
         let mut batch = String::new();
         for (c, count) in &self.counts {
             batch.push_str(&format!("{:04X}\t{}\n", *c as u32, count));
+        }
+
+        // The directory is not assumed to exist: the usual path is under
+        // XDG_CACHE_HOME, which nothing else here creates, and `create(true)`
+        // only creates the file.
+        if let Some(parent) = Path::new(&self.path).parent() {
+            if let Err(err) = create_dir_all(parent) {
+                warn!("Could not create glyph tally directory {}: {}", parent.display(), err);
+                self.counts.clear();
+                self.pending = 0;
+                return;
+            }
         }
 
         match OpenOptions::new().create(true).append(true).open(&self.path) {
