@@ -19,3 +19,11 @@ incremental = false
 [workspace.dependencies]
 toml = "0.9.2"
 toml_edit = "0.23.1"
+
+# crossfont 0.8.1 as published, plus one change in its DirectWrite backend: a font
+# that carries bitmap strikes (EBLC) is rasterised aliased, from a 1x1 texture,
+# instead of through the ClearType 3x1 texture -- whose three subpixel coverages
+# alacritty blends per channel, colouring every edge even on a pixel-exact font.
+# Terminus (TTF) is the font this is for. See vendor/crossfont/src/directwrite/mod.rs.
+[patch.crates-io]
+crossfont = { path = "vendor/crossfont" }
