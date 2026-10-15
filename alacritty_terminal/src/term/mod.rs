@@ -14,6 +14,7 @@ use log::{debug, trace};
 use unicode_width::UnicodeWidthChar;
 
 use crate::event::{Event, EventListener};
+use crate::glyph_tally;
 use crate::grid::{Dimensions, Grid, GridIterator, Scroll};
 use crate::index::{self, Boundary, Column, Direction, Line, Point, Side};
 use crate::selection::{Selection, SelectionRange, SelectionType};
@@ -1065,6 +1066,14 @@ impl<T: EventListener> Handler for Term<T> {
             Some(width) => width,
             None => return,
         };
+
+        // Record non-ASCII characters so the font's coverage can be subtracted
+        // offline; see the glyph_tally module. ASCII is skipped because every
+        // usable primary font covers it. No-op unless ALACRITTY_GLYPH_TALLY is
+        // set, which keeps this to one comparison in the common case.
+        if c as u32 >= 0x80 {
+            glyph_tally::record(c);
+        }
 
         // Handle zero-width characters.
         if width == 0 {

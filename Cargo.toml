@@ -23,3 +23,10 @@ toml_edit = "0.24.0"
 # TODO: Validation of fix for #6978. Remove before next release and use released `x11-clipboard`.
 [patch.crates-io]
 x11-clipboard = { git = "https://github.com/quininer/x11-clipboard.git", rev = "19ab2163cf0bd0db607e827a5214571990307866" }
+
+# crossfont 0.8.1 as published, plus one change in its DirectWrite backend: a font
+# that carries bitmap strikes (EBLC) is rasterised aliased, from a 1x1 texture,
+# instead of through the ClearType 3x1 texture -- whose three subpixel coverages
+# alacritty blends per channel, colouring every edge even on a pixel-exact font.
+# Terminus (TTF) is the font this is for. See vendor/crossfont/src/directwrite/mod.rs.
+crossfont = { path = "vendor/crossfont" }

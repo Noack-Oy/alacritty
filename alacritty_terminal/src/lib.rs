@@ -6,6 +6,7 @@
 
 pub mod event;
 pub mod event_loop;
+pub mod glyph_tally;
 pub mod grid;
 pub mod index;
 pub mod selection;

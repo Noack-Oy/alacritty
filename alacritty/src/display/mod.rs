@@ -364,6 +364,9 @@ pub struct Display {
     /// Mapped RGB values for each terminal color.
     pub colors: List,
 
+    /// Alternative RGB values used when palette indices 0..=15 are a cell's background.
+    pub background_palette: [Option<Rgb>; 16],
+
     /// State of the keyboard hints.
     pub hint_state: HintState,
 
@@ -521,6 +524,7 @@ impl Display {
             renderer_preference: config.debug.renderer,
             surface: ManuallyDrop::new(surface),
             colors: List::from(&config.colors),
+            background_palette: config.colors.background_palette(),
             frame_timer: FrameTimer::new(),
             raw_window_handle,
             damage_tracker,
@@ -1051,6 +1055,7 @@ impl Display {
         self.damage_tracker.debug = config.debug.highlight_damage;
         self.visual_bell.update_config(&config.bell);
         self.colors = List::from(&config.colors);
+        self.background_palette = config.colors.background_palette();
     }
 
     /// Update the mouse/vi mode cursor hint highlighting.
